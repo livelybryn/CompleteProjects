@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/brynkoldewyn/brynKoldewyn/CS6013/UnixShell/main.cpp
+iostream
+-
+shelpers.hpp
+/Users/brynkoldewyn/brynKoldewyn/CS6013/UnixShell/shelpers.hpp
+unistd.h
+-
+
+/Users/brynkoldewyn/brynKoldewyn/CS6013/UnixShell/shelpers.cpp
+shelpers.hpp
+/Users/brynkoldewyn/brynKoldewyn/CS6013/UnixShell/shelpers.hpp
+
+/Users/brynkoldewyn/brynKoldewyn/CS6013/UnixShell/shelpers.hpp
+string
+-
+iostream
+-
+unistd.h
+-
+sys/types.h
+-
+sys/stat.h
+-
+fcntl.h
+-
+vector
+-
+

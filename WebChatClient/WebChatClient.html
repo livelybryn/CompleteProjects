@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Chat Client</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="joinroom">
+    <p>
+        Welcome! Please enter a username and a room name below to start messaging
+    </p>
+    Username:
+    <input type="text" id="username">
+    Join room:
+    <input type="text" id="roomName">
+    <br>
+    <br>
+    <button onclick="startMessaging();">
+        Start!
+    </button>
+    <br>
+    <br>
+    <button onclick="startMessaging();">
+        Create new room
+    </button>
+
+</div>
+<div id="roomchat">
+
+</div>
+<script type="text/javascript">
+
+  function getElementValue(id) {
+    let element = document.getElementById(id);
+    return element.value;
+  }
+
+  function messageInput() {
+    return getElementValue('message');
+  }
+
+  function leaveRoom() {
+    document.getElementById('joinroom').style.display = 'block';
+    document.getElementById('roomchat').innerHTML = '';
+  }
+
+  function saveInputs() {
+    let username = getElementValue('username');
+    let roomName = getElementValue('roomName');
+    console.log('Username: ' + username + ' Room Name: ' + roomName);
+    return { username, roomName };
+  }
+
+  function usernameStyling(element) {
+    element.style.cssText = "color: black; font-weight: bold; font-family: Arial"
+  }
+
+  function contentStyling(element) {
+    element.style.cssText = 'color: grey; font-family: Arial'
+  }
+
+  function messageBlockStyling(element) {
+    element.style.cssText = "border: 2px solid #000000; padding: 10px; border-radius: 1cm; background-color: #ffe4e1; margin: 10px;"
+  }
+
+  function addMessagesToHTML(message) {
+    let messageObject = parseReceivedMessage(message);
+    console.log(messageObject);
+    let newMessage = document.createElement('div');
+    let messageUsername = document.createElement('span');
+    let messageContent = document.createElement('span');
+    messageUsername.innerHTML = messageObject.user + ': ';
+    messageContent.innerHTML = messageObject.message;
+    usernameStyling(messageUsername);
+    contentStyling(messageContent);
+    messageBlockStyling(newMessage);
+    newMessage.appendChild(messageUsername);
+    newMessage.appendChild(messageContent);
+    document.getElementById('roomchat').appendChild(newMessage);
+  }
+
+  function parseReceivedMessage(data) {
+    return JSON.parse(data);
+  }
+
+  function connectWebServer() {
+    let ws = new WebSocket('ws://localhost:8080/');
+    ws.addEventListener('open', function(event) {
+      console.log('Connected!');
+      ws.send('join ' + userInfo.roomName);
+      sendButton.addEventListener('click', function() {
+        ws.send(userInfo.username + ' ' + messageInput());
+      })
+    })
+    ws.addEventListener('message', function(event) {
+      console.log('Message from server: ' + event.data);
+      addMessagesToHTML(event.data);
+      // add message to array list for specified room
+    })
+    ws.addEventListener('error', function(event) {
+      console.log('There was an error with the connection');
+    })
+  }
+
+  var sendButton;
+  var userInfo;
+
+  function createMessageArea(room) {
+    let messageElement = createMessageElements();
+    addElementsToHTML(room, messageElement);
+  }
+
+  function addElementsToHTML(room, messageElement) {
+    messageElement.messageArea.appendChild(messageElement.message);
+    room.appendChild(messageElement.messageArea);
+    room.appendChild(messageElement.writeMessage);
+    room.appendChild(sendButton);
+    room.appendChild(messageElement.leaveRoomButton);
+  }
+
+  function createMessageElements() {
+    let messageArea = document.createElement('p');
+    let message = document.createTextNode('');
+    let writeMessage = document.createElement('input');
+    writeMessage.setAttribute('id', 'message');
+    writeMessage.setAttribute('type', 'text');
+    sendButton = document.createElement('button');
+    sendButton.innerHTML = 'send';
+    let leaveRoomButton = document.createElement('button');
+    leaveRoomButton.innerHTML = 'Leave room'
+    leaveRoomButton.onclick = leaveRoom;
+    return {
+      messageArea: messageArea,
+      message: message,
+      writeMessage: writeMessage,
+      leaveRoomButton
+    };
+  }
+
+  function roomDetailsStyling(element) {
+    element.style.cssText = 'font-weight: bold; font-size: 20px;'
+  }
+
+  function startMessaging() {
+    let room = document.getElementById('roomchat');
+
+    userInfo = saveInputs();
+    if (userInfo.roomName.length === 0) {
+      userInfo.roomName = createRoomName();
+    }
+    let roomDetails = document.createElement('p');
+    roomDetails.innerHTML = 'Username: ' + userInfo.username + '<br>Room Name: ' + userInfo.roomName;
+    roomDetailsStyling(roomDetails);
+    room.innerHTML = '';
+    room.appendChild(roomDetails);
+
+    createMessageArea(room);
+    document.getElementById('joinroom').style.display = 'none';
+    connectWebServer();
+  }
+
+  function createRoomName() {
+    var randomRoomName = '';
+    var possibleLetters = 'abcdefghijklmnopqrstuvwxyz';
+    for (let i = 0; i < 5; i++) {
+      randomRoomName += possibleLetters.charAt(Math.floor(Math.random() * possibleLetters.length));
+    }
+    return randomRoomName;
+  }
+
+
+</script>
+
+</body>
+</html>
