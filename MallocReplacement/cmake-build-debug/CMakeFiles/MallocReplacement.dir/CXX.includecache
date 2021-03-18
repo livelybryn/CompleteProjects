@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/brynkoldewyn/brynKoldewyn/CS6013/MallocReplacement/MemoryManager.h
+cstddef
+-
+
+/Users/brynkoldewyn/brynKoldewyn/CS6013/MallocReplacement/main.cpp
+iostream
+-
+MemoryManager.h
+/Users/brynkoldewyn/brynKoldewyn/CS6013/MallocReplacement/MemoryManager.h
+chrono
+-
+algorithm
+-
+
